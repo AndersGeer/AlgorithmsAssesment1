@@ -65,30 +65,15 @@ public class Thresholding {
 
 		}
 
-		int[] highX = new int[uf.count()];
-		int[] highY = new int[uf.count()];
-		int[] lowY = new int[uf.count()];
-		int[] lowX = new int[uf.count()];
-		/*
-		 * Arrays with "nothernmost", "easternmost", "westernmost" and
-		 * "southernmost" pixels that are connected
-		 */
 
-		for (int i = 0; i < lowX.length; i++) {
-			lowX[i] = -1;
-			highX[i] = -1;
-			lowY[i] = -1;
-			highY[i] = -1;
-		}
 
-		// redSquares(coords, uf, highX, highY, lowY, lowX);
+		
 
-		/*
-		 * for (int j : lowX) { StdOut.println(j); } StdOut.println(); for (int
-		 * j : highX) { StdOut.println(j); } StdOut.println(); for (int j :
-		 * lowY) { StdOut.println(j); } StdOut.println(); for (int j : highY) {
-		 * StdOut.println(j); }
-		 */
+		redSquares(coords, uf);
+
+		
+		 
+		 
 
 		/*
 		 * for (int i = 0; i < lowX.length; i++) { lowX[i] = width-1; } for (int
@@ -141,8 +126,21 @@ public class Thresholding {
 		StdOut.println("Count is: " + (uf.count()));
 	}
 
-	private void redSquares(Map<Integer, Coordinate> coords, WeightedQuickUnionUF uf, int[] highX, int[] highY,
-			int[] lowY, int[] lowX) {
+	private void redSquares(Map<Integer, Coordinate> coords, WeightedQuickUnionUF uf) {
+		
+		int[] highX = new int[uf.count()];
+		int[] highY = new int[uf.count()];
+		int[] lowY = new int[uf.count()];
+		int[] lowX = new int[uf.count()];
+		
+		for (int i = 0; i < lowX.length; i++) {
+			lowX[i] = -1;
+			highX[i] = -1;
+			lowY[i] = -1;
+			highY[i] = -1;
+		}
+		
+		
 		int currentPixel;
 		currentPixel = 0;
 		for (int x = width - 1; x >= 0; x--) {
@@ -197,10 +195,30 @@ public class Thresholding {
 
 			}
 		}
+		
+		for (int j : lowX) 
+		 { 
+			 StdOut.println(j); 
+		 } 
+		 StdOut.println(); 
+		 for (int j : highX) 
+		 { 
+			 StdOut.println(j); 
+			 } 
+		 StdOut.println(); 		 
+		 for (int j : lowY) 
+		 {
+			 StdOut.println(j); 
+		 } 
+		 StdOut.println(); 
+		 for (int j : highY) 
+		 {
+		 StdOut.println(j); 
+		 }
 	}
 
 	public static void main(String[] args) {
-		Thresholding t = new Thresholding("E:/Algorithms/Eclipse/Lab5_Pictures/Pictures/EdgeTest.png", 127);
+		Thresholding t = new Thresholding("E:/Algorithms/Eclipse/Lab5_Pictures/Pictures/shapes.bmp", 128);
 
 	}
 }
