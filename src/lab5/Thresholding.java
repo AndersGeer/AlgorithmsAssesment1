@@ -29,7 +29,7 @@ public class Thresholding {
 
 				// Binary
 				Color color = pic.get(x, y);
-				if (Luminance.lum(color) < thresholdValue) {
+				if (Luminance.lum(color) <= thresholdValue) {
 					pic.set(x, y, Color.BLACK);
 				} else {
 					pic.set(x, y, Color.WHITE);
@@ -39,27 +39,26 @@ public class Thresholding {
 		}
 		pic.show();
 
-		Map<Integer, Coordinates> coords = new HashMap<>();
+		Map<Integer, Coordinate> coords = new HashMap<>();
 
 		int currentPixel = 0;
 		WeightedQuickUnionUF uf = new WeightedQuickUnionUF(pic.width() * pic.height());
 		for (int x = width - 1; x >= 0; x--) {
 			for (int y = height - 1; y >= 0; y--) {
-				coords.put(currentPixel, new Coordinates(x, y));
+				coords.put(currentPixel, new Coordinate(x, y));
 				int thisSite = currentPixel;
 				Color thisColor = pic.get(x, y);
 
-				if (x != 0 && pic.get(x - 1, y).equals(thisColor)) {
-					;
-					int siteToUnion = currentPixel + (height);
-					uf.union(thisSite, siteToUnion);
-				}
-				if (y != 0 && pic.get(x, y - 1).equals(thisColor)) {
-					if (x != 0) {
+				if (y != 0 && pic.get(x, y-1).equals(thisColor)) {
+					
 						int siteToUnion = currentPixel + 1;
 						uf.union(thisSite, siteToUnion);
-					}
+								
+				}
+				if (x != 0 && pic.get(x-1, y).equals(thisColor)) {
 
+					int siteToUnion = currentPixel + (height);
+					uf.union(thisSite, siteToUnion);
 				}
 				currentPixel++;
 			}
@@ -82,75 +81,14 @@ public class Thresholding {
 			highY[i] = -1;
 		}
 
-		currentPixel = 0;
-		for (int x = width - 1; x >= 0; x--) {
-			for (int y = height - 1; y >= 0; y--) {
-				boolean connectedWithSomething = false;
-				Coordinates thisPixelCoords = coords.get(currentPixel);
-				Coordinates compareLowX;
-				Coordinates compareHighX;
-				Coordinates compareLowY;
-				Coordinates compareHighY;
-				for (int i = 0; i < lowX.length; i++) {
+		// redSquares(coords, uf, highX, highY, lowY, lowX);
 
-					if (lowX[i] != -1 && uf.connected(lowX[i], currentPixel)) {
-
-						compareLowX = coords.get(lowX[i]);
-						compareHighX = coords.get(highX[i]);
-						compareLowY = coords.get(lowY[i]);
-						compareHighY = coords.get(highY[i]);
-						if (compareLowX.getX() < thisPixelCoords.getX()) {
-							lowX[i] = currentPixel;
-						}
-						if (compareHighX.getX() > thisPixelCoords.getX()) {
-							highX[i] = currentPixel;
-						}
-						if (compareLowY.getY() > thisPixelCoords.getY()) {
-							lowY[i] = currentPixel;
-						}
-						if (compareHighY.getY() > thisPixelCoords.getY()) {
-							highY[i] = currentPixel;
-						}
-						connectedWithSomething = true;
-
-					}
-					compareLowX = null;
-					compareHighX = null;
-					compareLowY = null;
-					compareHighY = null;
-
-				}
-				if (!connectedWithSomething) {
-					for (int j = 0; j < lowX.length; j++) {
-						if (lowX[j] == -1) {
-							lowX[j] = currentPixel;
-							highX[j] = currentPixel;
-							lowY[j] = currentPixel;
-							highY[j] = currentPixel;
-							j = lowX.length;
-						}
-					}
-				}
-				currentPixel++;
-
-			}
-		}
-
-		for (int j : lowX) {
-			StdOut.println(j);
-		}
-		StdOut.println();
-		for (int j : highX) {
-			StdOut.println(j);
-		}
-		StdOut.println();
-		for (int j : lowY) {
-			StdOut.println(j);
-		}
-		StdOut.println();
-		for (int j : highY) {
-			StdOut.println(j);
-		}
+		/*
+		 * for (int j : lowX) { StdOut.println(j); } StdOut.println(); for (int
+		 * j : highX) { StdOut.println(j); } StdOut.println(); for (int j :
+		 * lowY) { StdOut.println(j); } StdOut.println(); for (int j : highY) {
+		 * StdOut.println(j); }
+		 */
 
 		/*
 		 * for (int i = 0; i < lowX.length; i++) { lowX[i] = width-1; } for (int
@@ -200,19 +138,69 @@ public class Thresholding {
 		 * 
 		 * } }
 		 */
-		StdOut.println((uf.count() - 1));
+		StdOut.println("Count is: " + (uf.count()));
 	}
 
-	private int ConvertToY(int x, int pixel) {
-		return height * (0 - x) + height + pixelnumber[pixel] + 1;
-	}
+	private void redSquares(Map<Integer, Coordinate> coords, WeightedQuickUnionUF uf, int[] highX, int[] highY,
+			int[] lowY, int[] lowX) {
+		int currentPixel;
+		currentPixel = 0;
+		for (int x = width - 1; x >= 0; x--) {
+			for (int y = height - 1; y >= 0; y--) {
+				boolean connectedWithSomething = false;
+				Coordinate thisPixelCoords = coords.get(currentPixel);
+				Coordinate compareLowX;
+				Coordinate compareHighX;
+				Coordinate compareLowY;
+				Coordinate compareHighY;
+				for (int i = 0; i < lowX.length; i++) {
 
-	private int ConvertToX(int y, int pixel) {
-		return (height + pixel - y + 1) / height;
+					if (lowX[i] != -1 && uf.connected(lowX[i], currentPixel)) {
+
+						compareLowX = coords.get(lowX[i]);
+						compareHighX = coords.get(highX[i]);
+						compareLowY = coords.get(lowY[i]);
+						compareHighY = coords.get(highY[i]);
+						if (compareLowX.getX() < thisPixelCoords.getX()) {
+							lowX[i] = currentPixel;
+						}
+						if (compareHighX.getX() > thisPixelCoords.getX()) {
+							highX[i] = currentPixel;
+						}
+						if (compareLowY.getY() > thisPixelCoords.getY()) {
+							lowY[i] = currentPixel;
+						}
+						if (compareHighY.getY() > thisPixelCoords.getY()) {
+							highY[i] = currentPixel;
+						}
+						connectedWithSomething = true;
+
+					}
+					compareLowX = null;
+					compareHighX = null;
+					compareLowY = null;
+					compareHighY = null;
+
+				}
+				if (!connectedWithSomething) {
+					for (int j = 0; j < lowX.length; j++) {
+						if (lowX[j] == -1) {
+							lowX[j] = currentPixel;
+							highX[j] = currentPixel;
+							lowY[j] = currentPixel;
+							highY[j] = currentPixel;
+							j = lowX.length;
+						}
+					}
+				}
+				currentPixel++;
+
+			}
+		}
 	}
 
 	public static void main(String[] args) {
-		Thresholding t = new Thresholding("E:/Algorithms/Eclipse/Lab5_Pictures/Pictures/shapes.bmp", 127);
+		Thresholding t = new Thresholding("E:/Algorithms/Eclipse/Lab5_Pictures/Pictures/EdgeTest.png", 127);
 
 	}
 }
